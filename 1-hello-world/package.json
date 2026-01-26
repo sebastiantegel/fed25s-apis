@@ -1,0 +1,26 @@
+{
+  "name": "1-hello-world",
+  "version": "1.0.0",
+  "description": "My first awesome api",
+  "keywords": [
+    "express",
+    "typescript",
+    "api",
+    "node"
+  ],
+  "license": "ISC",
+  "author": "Sebastian Tegel",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx tsx watch src/index.mts"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "typescript": "^5.9.3"
+  }
+}

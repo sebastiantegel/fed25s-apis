@@ -68,3 +68,20 @@ export const removeTodo = async (id: number) => {
     return false;
   }
 };
+
+// PUT - /todos/3 - body
+export const updateTodo = async (id: number, todo: Todo) => {
+  try {
+    const response = await fetch(`http://localhost:3000/todos/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({ todo }),
+      headers: {
+        "content-type": "application/json",
+      },
+    });
+
+    return response.ok;
+  } catch (error) {
+    return false;
+  }
+};

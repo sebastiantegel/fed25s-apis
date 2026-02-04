@@ -47,7 +47,7 @@ todoRouter.get("/:id", (req, res) => {
   }
 });
 
-// POST - /todos/
+// POST - /todos/ - body
 todoRouter.post("/", (req, res) => {
   // Försök att...
   try {
@@ -102,5 +102,39 @@ todoRouter.delete("/:id", (req, res) => {
     // Hit kommer vi om någonting krashar
     console.error(error);
     res.status(500).json({ message: error });
+  }
+});
+
+// PUT - /todos/3 - body
+todoRouter.put("/:id", (req, res) => {
+  try {
+    const { id } = req.params;
+    const { todo }: { todo: Todo } = req.body;
+
+    // Kontrollera att id och body-objektet matchar
+    if (+id !== todo.id) {
+      // Om inte, skicka ett fel
+      res.status(400).json({ message: "Parameter and body does not match" });
+    }
+    // Annars, gör detta
+    else {
+      // Hitta todo-objektet i listan
+      const found = todos.find((t) => t.id === todo.id);
+
+      // Ändra objektet
+      if (found) {
+        // Ändra de egenskaper som vi vill ändra
+        found.done = todo.done;
+        found.text = todo.text;
+        // Skicka tillbaka ett resultat
+        res.status(200).json(found);
+      } else {
+        // Skicka tillbaka ett resultat
+        res.status(404).json({ message: "Could not find the todo" });
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json(error);
   }
 });

@@ -1,14 +1,15 @@
 import type QueryString from "qs";
 import { Todo } from "../models/Todo.mjs";
+import { TodoModel } from "../models/TodoSchema.mjs";
 
 // Denna lista är vår "data" och det är denna som vi skickar tillbaka och ändrar i genom funktionerna nedan
-const todos: Todo[] = [
-  new Todo(1, "Learn express"),
-  new Todo(2, "Post utan postman :)"),
-  new Todo(3, "Learn controllers"),
-];
+// const todos: Todo[] = [
+//   new Todo(1, "Learn express"),
+//   new Todo(2, "Post utan postman :)"),
+//   new Todo(3, "Learn controllers"),
+// ];
 
-export const getTodos = (
+export const getTodos = async (
   q:
     | string
     | QueryString.ParsedQs
@@ -20,6 +21,9 @@ export const getTodos = (
     | (string | QueryString.ParsedQs)[]
     | undefined,
 ) => {
+  // Hämtar alla todos från databasen
+  const todos = await TodoModel.find();
+
   let filteredList = [...todos];
 
   if (q) {
@@ -48,46 +52,58 @@ export const getTodos = (
 };
 
 // Alternativ 1
-export const getTodo = (id: string) => todos.find((t) => t.id === +id);
+// Hämtar ett objekt från databasen, där id:t i databasen matchar id in i vår funktion
+export const getTodo = async (id: string) =>
+  await TodoModel.findOne({ id: +id });
 
 // Alternativ 2
 // export const getTodo = (id: string) => {
 //   return todos.find((t) => t.id === +id);
 // };
 
-export const createTodo = (text: string) => {
+export const createTodo = async (text: string) => {
   // Skapa en ny todo
   const newTodo = new Todo(Date.now(), text);
 
   // Lägg till den i listan
-  todos.push(newTodo);
+  // todos.push(newTodo);
+  // Lägg till objektet newTodo i databasen.
+  const createdInMongo = await TodoModel.create(newTodo);
 
-  // Skicka tillbaka det nyskapade objektet
-  return newTodo;
+  // Skicka tillbaka det nyskapade objektet från databasen
+  return createdInMongo;
 };
 
-export const removeTodo = (id: string) => {
+export const removeTodo = async (id: string) => {
   // Hitta positionen som todon som har id:t id har i listan
-  const index = todos.findIndex((t) => t.id === +id);
+  // const index = todos.findIndex((t) => t.id === +id);
 
   // Om positionen fanns (todon finns i listan)
-  if (index >= 0) {
-    todos.splice(index, 1);
+  // if (index >= 0) {
+  //   todos.splice(index, 1);
+  //   return true;
+  // }
+
+  const removedObject = await TodoModel.findOneAndDelete({ id: +id });
+
+  if (removedObject) {
     return true;
   }
 
   return false;
 };
 
-export const updateTodo = (todo: Todo) => {
+export const updateTodo = async (todo: Todo) => {
   // Hitta todo-objektet i listan
-  const found = todos.find((t) => t.id === todo.id);
+  // const found = todos.find((t) => t.id === todo.id);
 
-  if (found) {
-    // Ändra de egenskaper som vi vill ändra
-    found.done = todo.done;
-    found.text = todo.text;
-  }
+  // if (found) {
+  // Ändra de egenskaper som vi vill ändra
+  //   found.done = todo.done;
+  //   found.text = todo.text;
+  // }
 
-  return found;
+  await TodoModel.findOneAndUpdate({ id: todo.id }, todo);
+
+  return todo;
 };

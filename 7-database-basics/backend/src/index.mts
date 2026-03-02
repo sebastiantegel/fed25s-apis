@@ -10,7 +10,7 @@ const app = express();
 app.use(
   cors({
     origin: "http://localhost:5173",
-  })
+  }),
 );
 
 // Vi kan nu använda json i våra anrop

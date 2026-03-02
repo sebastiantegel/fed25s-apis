@@ -1,7 +1,7 @@
 import type { Todo } from "../models/Todo";
 
 // GET - /todos/
-export const getTodos = async () => {
+export const getTodos = async (randomize: boolean = false) => {
   // Försök att...
   try {
     // Anropa api:t genom GET - /todos
@@ -9,6 +9,11 @@ export const getTodos = async () => {
 
     // Resultatet av detta anrop blir en Todo[], en listan med Todo-objekt
     const data: Todo[] = await response.json();
+
+    // Om randomize är true, slumpa om listan
+    if (randomize) {
+      data.sort(() => Math.random() - 0.5);
+    }
 
     // Skicka tillbaka listan
     return data;

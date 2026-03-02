@@ -1,71 +1,120 @@
 import type { Todo } from "../models/Todo";
 import { getTodos, removeTodo, updateTodo } from "../services/todoService";
 
-// Funktion för att rita ut en lista med Todo-objekt på skärmen
-export const createHtml = (todos: Todo[]) => {
-  // Hitta ul-taggen i DOM:en
-  const ul = document.getElementById("todos");
+/**
+ * Skapar ett span-element med todo-text
+ */
+const createTodoTextElement = (todo: Todo): HTMLSpanElement => {
+  const span = document.createElement("span");
+  span.textContent = todo.text;
 
-  // Om den finns...
-  if (ul) {
-    // Töm den på innehåll
-    ul.innerHTML = "";
+  if (todo.done) {
+    span.className = "done";
   }
 
-  // Loopa igenom todo-listan
-  todos.forEach((todo) => {
-    // För varje todo:
+  return span;
+};
 
-    // Skapa en li-tagg
-    const li = document.createElement("li");
-    const span = document.createElement("span");
-    const toggleButton = document.createElement("button");
-    const removeButton = document.createElement("button");
+/**
+ * Skapar en knapp för att ändra todo-status
+ */
+const createToggleButton = (todo: Todo): HTMLButtonElement => {
+  const button = document.createElement("button");
+  button.textContent = "Ändra";
+  button.addEventListener("click", () => handleToggleTodo(todo));
+  return button;
+};
 
-    // Sätt texten i li-taggen
-    span.innerHTML = todo.text;
-    toggleButton.innerHTML = "Ändra";
-    removeButton.innerHTML = "Ta bort";
+/**
+ * Skapar en knapp för att ta bort en todo
+ */
+const createRemoveButton = (todoId: number): HTMLButtonElement => {
+  const button = document.createElement("button");
+  button.textContent = "Ta bort";
+  button.addEventListener("click", () => handleRemoveTodo(todoId));
+  return button;
+};
 
-    if (todo.done) {
-      span.className = "done";
+/**
+ * Skapar ett komplett li-element för en todo
+ */
+const createTodoListItem = (todo: Todo): HTMLLIElement => {
+  const li = document.createElement("li");
+  const textElement = createTodoTextElement(todo);
+  const toggleButton = createToggleButton(todo);
+  const removeButton = createRemoveButton(todo.id);
+
+  li.appendChild(textElement);
+  li.appendChild(toggleButton);
+  li.appendChild(removeButton);
+
+  return li;
+};
+
+/**
+ * Hanterar växling av todo-status (done/undone)
+ */
+const handleToggleTodo = async (todo: Todo): Promise<void> => {
+  try {
+    const updatedTodo: Todo = { ...todo, done: !todo.done };
+    const success = await updateTodo(todo.id, updatedTodo);
+
+    if (success) {
+      await refreshTodoList();
+    } else {
+      console.error("Kunde inte uppdatera todo");
+      // TODO: Visa felmeddelande för användaren
     }
+  } catch (error) {
+    console.error("Ett fel uppstod vid uppdatering av todo:", error);
+    // TODO: Visa felmeddelande för användaren
+  }
+};
 
-    // Gör li-taggen klickbar
-    removeButton.addEventListener("click", async () => {
-      // Om användaren klickar på li:n:
+/**
+ * Hanterar borttagning av en todo
+ */
+const handleRemoveTodo = async (todoId: number): Promise<void> => {
+  try {
+    const success = await removeTodo(todoId);
 
-      // Anropa removeTodo i todoService (kommer att försöka ta bort en todo)
-      const success = await removeTodo(todo.id);
+    if (success) {
+      await refreshTodoList();
+    } else {
+      console.error("Kunde inte ta bort todo");
+      // TODO: Visa felmeddelande för användaren
+    }
+  } catch (error) {
+    console.error("Ett fel uppstod vid borttagning av todo:", error);
+    // TODO: Visa felmeddelande för användaren
+  }
+};
 
-      // Om det gick bra
-      if (success) {
-        // Hämta alla todos från api:t
-        const todos = await getTodos();
+/**
+ * Uppdaterar todo-listan genom att hämta aktuell data och rendera om
+ */
+const refreshTodoList = async (): Promise<void> => {
+  const todos = await getTodos();
+  createHtml(todos);
+};
 
-        // Rita ut alla todos på skärmen
-        createHtml(todos);
-      } else {
-        // Present error message
-      }
-    });
+/**
+ * Renderar en lista med Todo-objekt på skärmen
+ */
+export const createHtml = (todos: Todo[]): void => {
+  const todoListElement = document.getElementById("todos");
 
-    toggleButton.addEventListener("click", async () => {
-      const success = await updateTodo(todo.id, { ...todo, done: !todo.done });
+  if (!todoListElement) {
+    console.error("Kunde inte hitta element med id 'todos'");
+    return;
+  }
 
-      if (success) {
-        const todos = await getTodos();
-        createHtml(todos);
-      } else {
-        // Generera ett felmeddelande
-      }
-    });
+  // Töm befintligt innehåll
+  todoListElement.innerHTML = "";
 
-    li.appendChild(span);
-    li.appendChild(toggleButton);
-    li.appendChild(removeButton);
-
-    // Lägg till sist till li-taggen i vår ul
-    ul?.appendChild(li);
+  // Skapa och lägg till varje todo-item
+  todos.forEach((todo) => {
+    const todoItem = createTodoListItem(todo);
+    todoListElement.appendChild(todoItem);
   });
 };

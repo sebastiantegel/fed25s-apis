@@ -1,7 +1,17 @@
 import express, { json } from "express";
 import cors from "cors";
-import { todoRouter } from "./routes/TodoRouter.mjs";
 import mongoose from "mongoose";
+import { config } from "dotenv";
+import { userRouter } from "./routes/userRouter.mjs";
+
+config();
+
+const mongoUri = process.env.MONGO_URI || "";
+const port = process.env.PORT || 4000;
+
+if (mongoUri === "") {
+  throw "MONGO_URI does not exist in .env";
+}
 
 // Skapa api:T
 const app = express();
@@ -17,21 +27,19 @@ app.use(
 // Vi kan nu använda json i våra anrop
 app.use(json());
 
-// Alla anrop till /todos skickas till todoRouter
-app.use("/todos", todoRouter);
+// Skicka alla anrop som slutar med /user till userRouter
+app.use("/user", userRouter);
 
 // Starta api:t
-app.listen(3000, async (error) => {
+app.listen(port, async (error) => {
   try {
     if (error) {
       console.error(error);
     }
 
-    await mongoose.connect(
-      "mongodb+srv://sebastiantegel:UsMeHBSPvUpUoSs2@cluster0.a2ub8.mongodb.net/TodoApp?retryWrites=true&w=majority&appName=Cluster0",
-    );
+    await mongoose.connect(mongoUri);
 
-    console.log("Api is running, connected to the database");
+    console.log(`Api is running on port: ${port}, connected to the database`);
   } catch (error) {
     console.error(error);
   }

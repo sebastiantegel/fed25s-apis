@@ -11,13 +11,13 @@ import {
 export const todoRouter = express.Router();
 
 // GET - /todos/
-todoRouter.get("/", (req, res) => {
+todoRouter.get("/", async (req, res) => {
   // Försök att...
   try {
     const { q, sort } = req.query;
 
     // Anropa funktionen som finns i todoController.
-    const todos = getTodos(q, sort);
+    const todos = await getTodos(q, sort);
 
     // Skicka tillbaka listan med stats 200 - OK
     res.status(200).json(todos);
@@ -29,14 +29,14 @@ todoRouter.get("/", (req, res) => {
 });
 
 // GET - /todos/3
-todoRouter.get("/:id", (req, res) => {
+todoRouter.get("/:id", async (req, res) => {
   // Försök att...
   try {
     // Hämta id:t från params (URL:n)
     const { id } = req.params;
 
     // Sök efter en todo som har id:t id
-    const found = getTodo(id);
+    const found = await getTodo(id);
 
     // Om todon hittades
     if (found) {
@@ -54,7 +54,7 @@ todoRouter.get("/:id", (req, res) => {
 });
 
 // POST - /todos/ - body
-todoRouter.post("/", (req, res) => {
+todoRouter.post("/", async (req, res) => {
   // Försök att...
   try {
     // Hitta egenskapen todoText från requestens body (Här krävs json() i index.mts)
@@ -62,7 +62,7 @@ todoRouter.post("/", (req, res) => {
 
     // Grundläggande validering (bör göras bättre)
     if (todoText && todoText !== "") {
-      const newTodo = createTodo(todoText);
+      const newTodo = await createTodo(todoText);
 
       // Skicka tillbaka todon med status 201 - Created
       res.status(201).json(newTodo);
@@ -80,14 +80,14 @@ todoRouter.post("/", (req, res) => {
 });
 
 // DELETE - /todos/3
-todoRouter.delete("/:id", (req, res) => {
+todoRouter.delete("/:id", async (req, res) => {
   // Försök att...
   try {
     // Hitta id:t från params (från URL)
     const { id } = req.params;
 
     // Anropa removeTodo som ger oss true/false tillbaka
-    const success = removeTodo(id);
+    const success = await removeTodo(id);
 
     if (success) {
       // Skicka tillbaka 204 - No Content
@@ -104,7 +104,7 @@ todoRouter.delete("/:id", (req, res) => {
 });
 
 // PUT - /todos/3 - body
-todoRouter.put("/:id", (req, res) => {
+todoRouter.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { todo }: { todo: Todo } = req.body;
@@ -116,7 +116,7 @@ todoRouter.put("/:id", (req, res) => {
     }
     // Annars, gör detta
     else {
-      const found = updateTodo(todo);
+      const found = await updateTodo(todo);
 
       // Ändra objektet
       if (found) {

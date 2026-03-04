@@ -2,10 +2,7 @@ import bcrypt from "bcryptjs";
 import User, { ConvertDbUserToDTO } from "../models/UserSchema.mjs";
 import type { UserDTO } from "../models/UserDTO.mjs";
 
-export const login = async (
-  email: string,
-  password: string,
-): Promise<UserDTO> => {
+export const login = async (email: string, password: string) => {
   const foundUser = await User.findOne({ email });
 
   if (!foundUser) {

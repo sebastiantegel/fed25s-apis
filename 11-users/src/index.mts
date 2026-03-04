@@ -4,6 +4,9 @@ import mongoose from "mongoose";
 import cors from "cors";
 import { registerRouter } from "./routes/registerRoute.mjs";
 import { loginRouter } from "./routes/loginRoute.mjs";
+import { auth } from "./middlewares/auth.mjs";
+import { secretRouter } from "./routes/secretRoute.mjs";
+import cookieparser from "cookie-parser";
 
 dotenv.config();
 
@@ -18,13 +21,21 @@ const app = express();
 
 app.use(cors());
 app.use(json());
+app.use(cookieparser());
 
 app.get("/ping", (_, res) => {
   res.status(200).json({ status: "I'm aliiiiive" });
 });
 
+// Använd auth för ALLA requests
+// app.use(auth);
+
 app.use("/register", registerRouter);
 app.use("/login", loginRouter);
+
+// Använd en middleware auth innan användaren kommer till secretRouter
+app.use("/secret", auth, secretRouter);
+// app.use("/todos", auth, todosRouter);
 
 app.listen(port, async (error) => {
   if (error) {

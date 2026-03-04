@@ -1,6 +1,7 @@
 import express from "express";
 import { login } from "../controllers/loginController.mjs";
 import jwt from "jsonwebtoken";
+import { ConvertDbUserToDTO } from "../models/UserSchema.mjs";
 
 export const loginRouter = express.Router();
 
@@ -14,7 +15,10 @@ loginRouter.post("/", async (req, res) => {
   try {
     const loggedInUser = await login(email, password);
 
-    const token = jwt.sign(loggedInUser, process.env.JWT_SECRET!);
+    const token = jwt.sign(
+      ConvertDbUserToDTO(loggedInUser),
+      process.env.JWT_SECRET!,
+    );
 
     const expires = new Date();
     expires.setHours(expires.getHours() + 1);

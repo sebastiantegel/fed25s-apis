@@ -19,7 +19,15 @@ app.get("/ping", (_, res) => {
   res.status(200).json({ status: "I'm aliiiiive" });
 });
 
-app.listen(port, async () => {
-  await mongoose.connect(dbUrl);
-  console.log("Api is up and running, connected to database");
+app.listen(port, async (error) => {
+  if (error) {
+    console.error(error);
+  }
+
+  try {
+    await mongoose.connect(dbUrl);
+    console.log("Api is up and running, connected to database");
+  } catch (error) {
+    console.error(error);
+  }
 });

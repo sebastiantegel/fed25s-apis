@@ -3,7 +3,7 @@ import type { UserType } from "../models/UserSchema.mjs";
 import User from "../models/UserSchema.mjs";
 
 export const createUser = async (user: UserType) => {
-  const found = await User.find({ email: user.email });
+  const found = await User.findOne({ email: user.email });
 
   if (found) {
     throw Error("User already exists");

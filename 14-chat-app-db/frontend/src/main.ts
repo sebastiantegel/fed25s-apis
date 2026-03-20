@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 import "./style.css";
-import type { Message } from "./models/message";
+import type { Message } from "@sebastiantegel/edutypes";
 
 const socket = io("http://localhost:3000");
 
@@ -15,7 +15,7 @@ document.getElementById("newMessageForm")?.addEventListener("submit", (e) => {
 
   socket.emit(
     "sendMessage",
-    { message: theMessage, from: username } satisfies Message,
+    { message: theMessage, from: username, time: new Date() } satisfies Message,
     selectedRoom,
   );
 });
@@ -78,9 +78,16 @@ function createMessageHtml(theMessage: Message) {
 
   const fromTag = document.createElement("span");
   const messageTag = document.createElement("span");
+  const timeTag = document.createElement("span");
 
   fromTag.textContent = theMessage.from + ": ";
   messageTag.textContent = theMessage.message;
+
+  console.log(new Date(theMessage.time));
+  const time = new Date(theMessage.time);
+
+  timeTag.textContent =
+    time.toLocaleDateString() + " " + time.toLocaleTimeString();
 
   if (theMessage.from === username) {
     messageContainer.className = "me";
@@ -90,6 +97,7 @@ function createMessageHtml(theMessage: Message) {
 
   messageContainer?.appendChild(fromTag);
   messageContainer?.appendChild(messageTag);
+  messageContainer?.appendChild(timeTag);
 
   chat?.appendChild(messageContainer);
 }

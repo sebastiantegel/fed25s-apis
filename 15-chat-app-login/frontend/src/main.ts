@@ -3,7 +3,8 @@ import "./style.css";
 import type { Message } from "@sebastiantegel/edutypes";
 
 const socket = io(
-  "https://fed25s-chat-cbgzhhgncrhjesg8.swedencentral-01.azurewebsites.net",
+  // "https://fed25s-chat-cbgzhhgncrhjesg8.swedencentral-01.azurewebsites.net",
+  "http://localhost:3000",
   {
     withCredentials: true,
     // transports: ["polling", "websocket"],

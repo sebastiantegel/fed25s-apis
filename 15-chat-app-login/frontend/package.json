@@ -1,0 +1,21 @@
+{
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-basic-ssl": "^2.3.0",
+    "typescript": "~5.9.3",
+    "vite": "^8.0.0"
+  },
+  "dependencies": {
+    "@sebastiantegel/edutypes": "^1.0.3",
+    "axios": "^1.13.6",
+    "socket.io-client": "^4.8.3"
+  }
+}

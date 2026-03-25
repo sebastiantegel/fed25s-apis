@@ -2,7 +2,9 @@ import { io } from "socket.io-client";
 import "./style.css";
 import type { Message } from "@sebastiantegel/edutypes";
 
-const socket = io("http://localhost:3000");
+const socket = io(
+  "http://fed25s-chat-cbgzhhgncrhjesg8.swedencentral-01.azurewebsites.net",
+);
 
 let selectedRoom = "";
 let username = "";

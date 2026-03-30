@@ -1,21 +1,21 @@
 class Person {
   name: string;
   age: number;
-  distance: number;
+  distanceInKm: number;
 
   constructor(name: string, age: number) {
     this.name = name;
     this.age = age;
-    this.distance = 0;
+    this.distanceInKm = 0; // Initate a new person with distance 0
   }
 
-  walk() {
-    this.distance += 1000;
+  walk(distanceWalkedInKm: number) {
+    this.distanceInKm += distanceWalkedInKm;
   }
 }
 
 const p = new Person("Sebastian", 46);
 
-p.walk();
+p.walk(2);
 
 const someVar = 10;

@@ -21,9 +21,9 @@ loginRouter.post("/", async (req, res) => {
 
       res.cookie("login", token, {
         expires,
-        sameSite: "none",
-        secure: true,
-        httpOnly: true,
+        sameSite: "none", // Allows cookies from wherever but requires the secure to be true
+        secure: true, // Using https
+        httpOnly: true, // Do not allow javascript access from the browser with document.cookies
       });
 
       return res.status(200).json(userDto);
